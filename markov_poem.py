@@ -41,8 +41,8 @@ def throwUsageError():
     sys.exit()
 
 def generateLine(syllables, text_model):
-    for i in range(100):
-        sentence = text_model.make_short_sentence(syllables*6)
+    for i in range(300):
+        sentence = text_model.make_sentence()
         if (sentence):
             syls = getSyllables(sentence)
             if (syls == syllables):

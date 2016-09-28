@@ -46,6 +46,14 @@ I was to be grownups
 And still his eyes cast down
 ```
 
+```
+$ python markov_poem.py -s 10,10,10,10 -f ~/Downloads/grays-anatomy.utf8.txt 
+In mammals, it does during mitosis
+The position of the whole of the mouth
+CHAPTER 42 739 THE BACK A B Disc A B Fig
+Like the maxilla, the form of twinning
+```
+
 ### Notes
 
 - If the source text is too short, markovify will fail.

@@ -17,7 +17,16 @@ def main(argv):
         elif opt in ("-f", "--file"):
             sourceText = arg
         elif opt in ("-s", "--syllables"):
-            syllableCounts = arg.split(',')
+            syllableCounts = arg
+
+    print generatePoem(syllableCounts, sourceText)
+
+
+def generatePoem(syllableCounts, sourceText):
+
+    result = []
+
+    syllableCounts = syllableCounts.split(',')
 
     if not os.path.isfile(sourceText):
         throwUsageError()
@@ -32,9 +41,11 @@ def main(argv):
     for s in syllableCounts:
         line = generateLine(int(s), text_model)
         if line:
-            print line
+            result.append(line)
         else:
-            print 'Error: could not generate a line where syllable count == ' + s
+            result.append('Error: could not generate a line where syllable count == ' + s)
+
+    return '\n'.join(result)
 
 def throwUsageError():
     print 'Usage: python markov_poem.py -f <source_text_filepath> -s <comma,separated,syllable,count>'

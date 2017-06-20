@@ -21,6 +21,15 @@ def removeDuplicateCachedModels(cacheIndex, source):
         if i[0] == source:
             cacheIndex.remove(i)
 
+def writeJson(fileHandle, jsonString):
+    return fileHandle.write(unicode(json.dumps(jsonString, ensure_ascii=False)))
+
+def openFile(path, mode, isRelative = True):
+    if isRelative:
+        currentDir = os.path.dirname(__file__)
+        path = os.path.join(currentDir, path)
+    return io.open(path,mode,encoding='utf-8')
+
 def main(argv):
     sourceText = ''
     syllableCounts = ''
@@ -54,7 +63,8 @@ def generatePoem(syllableCounts, sourceText, cache):
         throwUsageError()
 
     # get list of cached sources
-    with io.open('data/sources.json','r') as f:
+
+    with openFile('data/sources.json', 'r') as f:
         text = f.read()
         if text != '':
             sourceModelIndex = json.loads(text)
@@ -66,23 +76,23 @@ def generatePoem(syllableCounts, sourceText, cache):
 
     # if ww to use cache, and current source is cached:
     if cache and sourceCacheId:
-        with io.open('data/' + sourceCacheId + '.json','r') as f:
+        with openFile('data/' + sourceCacheId + '.json', 'r') as f:
             data = json.load(f)
             text_model = markovify.Text.from_json(data)
     else:
-        with io.open(sourceText,'r') as f:
+        with openFile(sourceText, 'r', False) as f:
             text = f.read()
         text_model = markovify.Text(text)
         model_json = text_model.to_json()
 
         # save new markov model to cache
         sourceId = makeId()
-        with io.open('data/sources.json','w',encoding="utf-8") as indexFile:
+        with openFile('data/sources.json', 'w') as indexFile:
             removeDuplicateCachedModels(sourceModelIndex, sourceText)
             sourceModelIndex.append((sourceText,sourceId))
-            indexFile.write(unicode(json.dumps(sourceModelIndex, ensure_ascii=False)))
-        with open('data/' + sourceId + '.json', 'w') as outFile:
-            json.dump(model_json, outFile)
+            writeJson(indexFile, sourceModelIndex)
+        with openFile('data/' + sourceId + '.json', 'w') as outFile:
+            writeJson(outFile, model_json)
 
     for s in syllableCounts:
         line = generateLine(int(s), text_model)

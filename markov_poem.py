@@ -5,6 +5,7 @@ from syllables import getSyllables
 import json
 import string
 import random
+import re
 
 def makeId(size=6, chars=string.ascii_uppercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
@@ -95,12 +96,17 @@ def generatePoem(syllableCounts, sourceText, cache):
             writeJson(outFile, model_json)
 
     for s in syllableCounts:
-        line = generateLine(int(s), text_model)
-        if line:
-            result.append(line)
+        errorMessage = '[Error generating line with length ' + s + ']'
+        if int(s) > 2 and int(s) < 15:
+            line = None
+            i = 0
+            while not line and i < 10:
+                line = generateLine(int(s), text_model)
+            if not line:
+                line = errorMessage
         else:
-            result.append('Error: could not generate a line where syllable count == ' + s)
-
+            line = errorMessage
+        result.append(line)
     return '\n'.join(result)
 
 def throwUsageError():
